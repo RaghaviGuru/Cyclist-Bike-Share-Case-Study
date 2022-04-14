@@ -16,8 +16,7 @@ library(ggplot2)
 library(lubridate)
 
 # set the working directory
-s
-etwd("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder")
+setwd("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder")
 getwd()
 
 # STEP 1: COLLECT DATA
