@@ -1,3 +1,13 @@
+# This analysis is based on the Divvy case study "'Sophisticated, Clear, and Polished’: Divvy and Data Visualization" written by Kevin Hartman 
+# found here: https://artscience.blog/home/divvy-dataviz-case-study. 
+# The purpose of this script is to consolidate downloaded Divvy data into a single dataframe. 
+# conduct simple analysis to help answer the key question: “In what ways do members and casual riders use Divvy bikes differently?”
+
+#Installed required packages
+# tidyverse for data import and wrangling
+# lubridate for date functions
+# ggplot for visualisation
+
 install.packages("tidyverse")
 install.packages("lubridate")
 install.packages("ggplot2")
@@ -5,8 +15,13 @@ library(tidyverse)
 library(ggplot2)
 library(lubridate)
 
+# set the working directory
+s
+etwd("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder")
 getwd()
-setwd("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder")
+
+# STEP 1: COLLECT DATA
+
 q1_2021<- read_csv("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder/Cyclist_01_2022-03-02/202101_ext.csv")
 q2_2021<- read_csv("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder/Cyclist_02_2022-03-02/202102_ext.csv")
 q3_2021<- read_csv("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder/Cyclist_03_2022-03-02/202103_ext.csv")
@@ -20,15 +35,21 @@ q10_2020<- read_csv("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder/Cycli
 q11_2020<- read_csv("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder/Cyclist_11_2022-03-02/202011_ext.csv")
 q12_2020<- read_csv("C:/Users/Raghavi/Desktop/cyclistic_2022/CSV Subfolder/Cyclist_12_2022-03-02/202012_ext.csv")
 
+# STEP 2: WRANGLE DATA AND COMBINE INTO A SINGLE FILE
 
+# Compare column names each of the files
 colnames(q1_2021)
+colnames(q2_2021)
+colnames(q3_2021)
+colnames(q4_2020)
+colnames(q5_2020)
 
+# Rename columns  to make them consistent with q1_2020
 
-
-(q12_2020 <- rename(q12_2020
+(q1_2020 <- rename(q1_2020
                     ,trip_id = ride_id
-                    ,bikeid=rideable_type 
-                    ,start_time= started_at 
+                    ,bikeid = rideable_type 
+                    ,start_time = started_at 
                     ,end_time = ended_at  
                     ,from_station_name = start_station_name 
                     ,from_station_id = start_station_id 
@@ -37,8 +58,10 @@ colnames(q1_2021)
                      ))
                     
                    
+				 
  str(q2_2021)
 
+# Convert trip_id and bikeid to character so that they can stack correctly
 
 (q1_2021 <-  mutate(q1_2021, trip_id = as.character(trip_id)
                    ,bikeid = as.character(bikeid)))
@@ -52,39 +75,29 @@ colnames(q1_2021)
                    ,bikeid = as.character(bikeid)))
 (q6_2020 <-  mutate(q6_2020, trip_id = as.character(trip_id)
                    ,bikeid = as.character(bikeid)))
-(q7_2020 <-  mutate(q7_2020, trip_id = as.character(trip_id)
-                   ,bikeid = as.character(bikeid)))
-(q8_2020 <-  mutate(q8_2020, trip_id = as.character(trip_id)
-                   ,bikeid = as.character(bikeid)))
-(q9_2020 <-  mutate(q9_2020, trip_id = as.character(trip_id)
-                   ,bikeid = as.character(bikeid)))
-(q10_2020 <-  mutate(q10_2020, trip_id = as.character(trip_id)
-                   ,bikeid = as.character(bikeid)))
-(q11_2020 <-  mutate(q11_2020, trip_id = as.character(trip_id)
-                   ,bikeid = as.character(bikeid)))
-(q12_2020 <-  mutate(q12_2020, trip_id = as.character(trip_id)
-                   ,bikeid = as.character(bikeid)))
 
 
-
-
- ## mutated few more columns
+## mutated few more columns to make consistent
  q1_2021 <-  mutate(q1_2021, from_station_id = as.character(from_station_id)
                               ,to_station_id = as.character(to_station_id)
                               ,start_time= as.POSIXct(start_time, format= "%m/%d/%Y %H:%M")
                               ,end_time= as.POSIXct(end_time, format= "%m/%d/%Y %H:%M"))
  
 
-##bind all the rows into one data frame
+## Stack individual quarter's data frames into one big data frame
+
 all_trips <- bind_rows(q1_2021, q2_2021,q3_2021, q4_2020, q5_2020,q6_2020,q7_2020,q8_2020,q9_2020,q10_2020,q11_2020,q12_2020)
 
 ##removed unnecessary columns
 
 all_trips <- all_trips %>%
 select(-c("ride_length...9","day_of_week...10"))
-##to view the the data type and column names
 
-colnames(all_trips)
+# STEP 3: CLEAN UP AND ADD DATA TO PREPARE FOR ANALYSIS
+
+#to view the the data type and column names
+ 
+ colnames(all_trips)
  [1] "trip_id"           "bikeid"            "start_time"        "end_time"         
  [5] "from_station_name" "from_station_id"   "to_station_name"   "to_station_id"    
  [9] "member_casual"     "day_of_week"      
@@ -102,16 +115,15 @@ tibble [3,489,748 x 10] (S3: tbl_df/tbl/data.frame)
  $ member_casual    : chr [1:3489748] "member" "member" "member" "member" ...
  $ day_of_week      : num [1:3489748] 7 4 5 5 7 7 2 5 7 1 ...
 
-
-
-##total no of rows
+#total no of rows
 nrow(all_trips)
  3489748
 
-##dimensions of the data frame
+#dimensions of the data frame
 dim(all_trips) 
 3489748      10
 
+#to see the first 6 rows of data frame
 head(all_trips)
 # A tibble: 6 x 10
   trip_id  bikeid start_time          end_time            from_station_na~ from_station_id
@@ -140,22 +152,22 @@ $ member_casual     <chr> "member", "member", "member", "member", "casual", "cas
 $ day_of_week       <dbl> 7, 4, 5, 5, 7, 7, 2, 5, 7, 1, 7, 7, 7, 1, 6, 3, 7, 4, 6, 1, 2,~
 
 
-##to remove na from DF
+#to remove na from dataframe
 colSums(is.na(all_trips))
  trip_id            bikeid        start_time          end_time from_station_name 
                 0                 0                 0                 0            122175 
   from_station_id   to_station_name     to_station_id     member_casual       day_of_week 
            122801            132965            133426            343005            343005 
 
-##to remove missing values
+#to remove missing values
 all_trips_clean <- all_trips[complete.cases(all_trips), ]
 
-##to remove "na" from DF
+#to remove "N/A" from dataframe
 colSums(is.na(all_trips_clean))
 all_trips_clean<-all_trips[!(all_trips$to_station_name=="N/A" | all_trips$to_station_id=="N/A"),]
 
 
-##Flitering started_at data that is greater than ended_at
+#filtering start_time data that is greater than end_time
 all_trips_clean <- all_trips_clean %>% 
   filter(all_trips_clean$start_time < all_trips_clean$end_time)
 
@@ -185,7 +197,7 @@ tibble [2,952,154 x 14] (S3: tbl_df/tbl/data.frame)
 > 
 
 glimpse(all_trips_clean)
-##to view the first 6 rows
+#to view the first 6 rows
  head(all_trips_clean)
 # A tibble: 6 x 14
   trip_id  bikeid start_time          end_time            from_station_na~ from_station_id
@@ -199,13 +211,13 @@ glimpse(all_trips_clean)
 # ... with 8 more variables: to_station_name <chr>, to_station_id <chr>,
 #   member_casual <chr>, day_of_week <chr>, date <date>, month <chr>, day <chr>,
 #   year <chr>
->
-##to view the last 6 rows
-> tail(all_trips_clean)
-#
-##Final summary of the data frame
+
+#to view the last 6 rows
+ tail(all_trips_clean)
+
+#Final summary of the data frame
  
->summary(all_trips_clean)
+summary(all_trips_clean)
 
    trip_id             bikeid            start_time                 
  Length:2952154     Length:2952154     Min.   :2020-04-01 00:00:00  
@@ -234,7 +246,7 @@ glimpse(all_trips_clean)
  Mode  :character   Mode  :character   Mode  :character  
   
 
- ##dimensions of the D.F  
+#dimensions of the Dataframe
 
 dim(all_trips_clean)
 [1] 2952154      14
@@ -257,18 +269,15 @@ $ month             <chr> "01", "01", "01", "01", "01", "01", "01", "01", "01", 
 $ day               <chr> "25", "23", "09", "09", "24", "22", "05", "30", "27", "15", "1~
 $ year              <chr> "2021", "2021", "2021", "2021", "2021", "2021", "2021", "2021"~
  
-
-
-
-##to remove "na" from DF
+#to remove "na" from dataframe
 colSums(is.na(all_trips_clean))
 all_trips_clean<-all_trips[!(all_trips$to_station_name=="N/A" | all_trips$to_station_id=="N/A"),]
 
 
-##Add new column to calculate each ride length in mins
+#add new column to calculate each ride length in mins
 all_trips_clean$ride_length <- difftime(all_trips_clean$end_time, 
                                                      all_trips_clean$start_time)
-Inspect the structure of the columns
+#inspect the structure of the columns
 str(all_trips_clean)
 tibble [2,952,154 x 15] (S3: tbl_df/tbl/data.frame)
  $ trip_id          : chr [1:2952154] "B9F73448DFBE0D45" "457C7F4B5D3DA135" "57C750326F9FDABE" "4D518C65E338D070" ...
@@ -288,17 +297,18 @@ tibble [2,952,154 x 15] (S3: tbl_df/tbl/data.frame)
  $ ride_length      : 'difftime' num [1:2952154] 420 300 540 540 ...
   ..- attr(*, "units")= chr "secs"
 
-##Convert “ride_length” from Factor to numeric so we can run calculations on the data
+#convert “ride_length” from Factor to numeric so we can run calculations on the data
 is.factor(all_trips_cleaned$ride_length)
 FALSE
-all_trips_clean$ride_length <- as.numeric(as.character(all_trips_clean$ride_length))
+all_trips_clean$ride_length <- as.nemeric(as.character(all_trips_clean$ride_length))
 is.numeric(all_trips_clean$ride_length)
 TRUE
 
-Remove “bad” data and store in a new dataframe
+#remove “bad” data and store in a new dataframe
 all_trips_v2 <- all_trips_clean[!(all_trips_clean$from_station_name == "HQ QR" | all_trips_clean$ride_length<0),]
 
-CONDUCT DESCRIPTIVE ANALYSIS
+# STEP 4: CONDUCT DESCRIPTIVE ANALYSIS
+
 Descriptive analysis on ride_length (all figures in minutes)
 mean(all_trips_v2$ride_length)
 
@@ -325,8 +335,8 @@ median(all_trips_v2$ride_length)
 1                     casual                        0
 2                     member                        0
 
-###See the average ride time by each day for members vs casual users
-# Arranging the days of the week accordingly
+#See the average ride time by each day for members vs casual users
+#arranging the days of the week accordingly
 all_trips_v2$day_of_week <- ordered(all_trips_v2$day_of_week, levels=c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
 
 aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual + all_trips_v2$day_of_week, FUN = mean)
@@ -345,15 +355,14 @@ aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual + all_trips_v2$d
 12                     member                   Friday                 911.9893
 13                     casual                 Saturday                2773.8096
 14                     member                 Saturday                1023.3728
-> 
-###Analyze ridership data by type and weekday
-all_trips_v2 %>% 
+
+#Analyze ridership data by type and weekday
+ all_trips_v2 %>% 
   mutate(weekday = wday(start_time, label = TRUE)) %>%
   group_by(member_casual, weekday) %>%  
   summarise(number_of_rides = n()                             
                   ,average_duration = mean(ride_length)) %>%         
   arrange(member_casual, weekday) 
-
 
 `summarise()` has grouped output by 'member_casual'. You can override using the `.groups`
 argument.
@@ -376,7 +385,7 @@ argument.
 13 member        Fri              265028             920.
 14 member        Sat              274071            1042.
 
-###Visual for number of rides grouped by rider type
+# Visualise for number of rides grouped by rider type
 all_trips_v2 %>% 
   group_by(member_casual, day_of_week) %>% 
   summarise(number_of_rides = n(), .groups = 'drop') %>% 
@@ -385,7 +394,7 @@ all_trips_v2 %>%
   labs(x = "Day of Week", y = "Number of Rides", fill = "Member/Casual",
        title = "Average Number of Rides by Day: Members vs. Casual Riders")
 
-### Let's create a visualization for average duration
+# create a visualization for average duration
 
 all_trips_v2 %>% 
   group_by(member_casual, day_of_week) %>% 
@@ -397,7 +406,7 @@ all_trips_v2 %>%
        title = "Average Riding Duration by Day: Members vs. Casual Riders")
 
  
-###Average Number of Rides by Month
+#Average Number of Rides by Month
 all_trips_v2 %>% 
   group_by(month, member_casual) %>% 
   summarize(number_of_rides = n(), .groups = 'drop') %>% 
@@ -410,7 +419,7 @@ all_trips_v2 %>%
        fill = "Member/Casual",
        title = "Average Number of Rides by Month: Casual Riders")
 
-###Visual for Top 10 Used Stations by Casual Members
+#Visual for Top 10 Used Stations by Casual Members
 ggplot(data = top_10_station_casual) +
   geom_col(aes(x = reorder(stations, station_count), y = station_count), fill = "lightsalmon") +
   labs(title = "Top 10 Used Stations by Casual Riders", x = "", y = "Number of Rides") + 
@@ -418,7 +427,6 @@ ggplot(data = top_10_station_casual) +
   coord_flip() +
   theme_minimal() 
 
-# STEP 5: EXPORT SUMMARY FILE FOR FURTHER ANALYSIS
 counts <- aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual + all_trips_v2$day_of_week, FUN = mean)
 write.csv(counts, file = '~/Desktop/Divvy_Exercise/avg_ride_length.csv')
 
