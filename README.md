@@ -33,6 +33,36 @@ Lily Moreno: The director of marketing and my manager.
 Cyclistic executive team: The detail-oriented executive team will decide whether to approve the
 recommended marketing program.
 
+Ask:
+
+Business Task:
+Design marketing startegies aimed to convert caual riders to annual members, 
+which will be the key to future growth.
+
+Data Sources used:
+Downloaded the csv files from,
+https://artscience.blog/home/divvy-dataviz-case-study.
+
+Prepare:
+Data is original, comprehensive, reliable hence it ROCC's. 
+It has no bias or credibility issues.
+
+Process:
+Used Excel to convert to .csv, R Studio for coding, ggplot2 for visualisation.
+Downloaded , unzipped the files.  
+Created folder, sub-folders and stored it in .csv.
+
+Analyze:
+Used R Studio to import data, cleaned up for data analysis, Conducted descripted analysis
+Exported the file for further analysis
+
+Share:
+Created Data Visualisations using R. (ggplot2)
+
+
+
+
+
 
 
 
